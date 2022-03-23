@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[Tabulka]
+(
+	[item1] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+	[item2] INT NOT NULL,
+	[item3] INT NOT NULL
+)
