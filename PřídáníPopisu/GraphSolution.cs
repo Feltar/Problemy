@@ -9,15 +9,16 @@ namespace PřídáníPopisu
     /* Let G = (V,E) be an unoriented graph, where V = {1,2,…,n} and let us consider a matrix of the data type boolean and size nxn, so that
 	            for each i, j \in {0,1,2,…, n}      M(i, j) = true, 
             if and only if (i, j) \in V. 
-        Find the size of a maximal component of the Graph G.
+        
+       Find the size of a maximal component of the Graph G.
     
-        Observation: Matrix M is symmetrical.
+       Observation: Matrix M is symmetrical.
     
         Solution:
         The algorithm is implemented as a breadth search.
-        We keep a Colors array, that helps us remember which  Vertices we have already visited 
+        We keep a Colors array, that helps us remember which  vertices we have already visited 
             and SizeOfComponent array, that keeps the size of particular components 
-        We go through the vertices and apply edges that go to vertices whose nominal value is smaller than the vertex, we examine at that moment.
+        We go through the vertices one by one and apply edges that go (from examined vertex) to vertices whose nominal value is smaller than the examined vertex.
 
         Algorithm:
         Let us define a color of each vertex as a number that is eaqual to the nominal value of that vertex.
@@ -26,12 +27,15 @@ namespace PřídáníPopisu
             For each of the col values we color all the indexes that vertex col is connected with (by an edge) and whose nominal value is greater than col. 
                 For each such action (recolouring of a vertex) we increment the SizeOfComponent corresponding to the col value by one. 
     
-        At the end of this process we look at which color corresponds to the largest size of component.
+        At the end of this process we look for which color corresponds to the maximum component. 
             
         Complexity:
-        It seems to me that the exact time complexity depends on the characterics of the input. 
-        In our case we are going to use the matrix of coincidence. For each element of the graph we are going to make at most n operations, so
-        its time complexity is O(n^2). If the input would take form of an array of edges, I believe the time complexity would be O(m n), with m being the length of the array of edges. 
+        It seems to me that the exact time complexity depends on the character of the input. 
+        In our case we are going to use the matrix of coincidence. For each element of the graph we are going to preform at most n operations. So
+        the time complexity of this solution is O(n^2). 
+        I shall not prove its optimality.
+
+        If the input would take form of an array of edges, I believe the time complexity would be O(m n), with m being the length of the array of edges. 
      */
 
 

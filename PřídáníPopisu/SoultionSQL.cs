@@ -35,8 +35,8 @@ namespace PřídáníPopisu {
     {
         /// <summary>
         /// This method first finds out wether there already is defined a column named Comment in the TestDataTable of the TestDatabase.
-        /// If there is, then it terminates. If not, then it alters the data table, so it contains a column named Comment with a NOT NULL constraint.Then it assigns to it the  
-        /// descriptions given as parameters. By default a record not contained in the listOfIds is going to contain a string 'default value'. 
+        /// If there is, then it terminates. If not, then it alters the data table, so it contains a column named Comment with a NOT NULL constraint. 
+        /// Then it assigns to it the descriptions given as parameters. By default a record not contained in the listOfIds is going to contain a string 'default value'. 
         /// </summary>
         /// <param name="listOfIds">Ids of records, that we want to assign descriptions to.</param>
         /// <param name="listOfDescriptions">Descriptions that are going to be stored in the Comment column. 
@@ -77,14 +77,22 @@ namespace PřídáníPopisu {
                         server.ExecutionManager.ConnectionContext.BeginTransaction();
 
 
-                        //altering the table: adding new column named 'Comment' that is of type varchar(50) and does not allow NULLs
-                        //and setting constraint regarding default value, that should be inserted instead of NULL upon altering the table
-                        string sqlKodPridaniSloupce = "ALTER TABLE TestDataTable ADD Comment varchar(50)  NOT NULL CONSTRAINT TheNameOfDefaultValueConstraint DEFAULT('default value') WITH VALUES; \n GO";
+                        //altering the table: we add new column named 'Comment' that is of the type varchar(50) and does not allow NULLs
+                        //and we set constraint regarding default value, that should be inserted instead of NULL upon altering the table
+                        string sqlKodPridaniSloupce = "ALTER TABLE " +
+                                                            "TestDataTable " +
+                                                      "ADD " +
+                                                            "Comment varchar(50) NOT NULL " +
+                                                      "CONSTRAINT " +
+                                                            "TheNameOfDefaultValueConstraint " +
+                                                      "DEFAULT('default value') " +
+                                                            "WITH VALUES; " +
+                                                      "\n GO";
                         server.ConnectionContext.ExecuteNonQuery(sqlKodPridaniSloupce);
 
                         //changing the description
                         //first we need to append and prepand the list of descriptions by single quotation marks, so the SQL server interprets it as a string
-                            //Note: Under normal circumstance we would pass it ass a parameter, but I couldn't find online how it's done using SMO
+                            //Note: Under normal circumstance we would pass it as a parameter, but I couldn't find online how it's done using SMO
                         listOfDescriptions = listOfDescriptions.Select(x => '\'' + x + '\'').ToList();
                         for (int i = 0; i < listOfDescriptions.Count; i++)
                         {
