@@ -9,23 +9,23 @@ using System.Threading.Tasks;
 
 namespace PřídáníPopisu { 
     //Při pohovoru jsi se mě dotazoval, jak bych přidal programačně do nějaký databáze za běhu sloupec Poznámka, kdybych chtěl, aby nemohl obsahovat null hodnoty a
-    //kdybych tam chtěl reálný hodnoty po jeho přidání za běhu dopsat.
+    //kdybych do toho sloupce posléze chtěl přidat nějaké hodnoty za běhu.
     //Pak jsi to doplnil komentářem, že ty bys to dělal v rámci transakce. Popravdě jsem si to chtěl zkusit, tak jsem si k tomu dneska sednul
     //a narazil jsem na jeden problém. Moje interpretace:
     
     //Jestli to chápu správně, tak když chci spustit více dotazů v rámci jedný transakce, tak jsou ty dotazy parsovaný v jedný dávce (batch).
     //Ten server prostě ty metadata ohledně příslušný tabulky načte jenom jednou (na začátku tý transakce).
     //To znamená, že když pustím DDL dotaz na přidání sloupce, tak i přesto, že vše proběhne v pořádku, tak
-    //mi ten Server při odvální se na ten sloupec vyhodí chybu. Právě kvůli tomu, že tam ten sloupec nebyl na začátku transakce.
+    //mi ten Server při odvální se na ten sloupec při následném updatu vyhodí chybu - právě kvůli tomu, že tam ten sloupec nebyl na začátku transakce.
     //Dočetl jsem se, že to jde nějak řešit použitím GO delimiteru, který odděluje jednotlivý dávky.
-    //Tam je ovšem probĺém, že ADO.NET, ani Dapper (což je jenom extension knihovna ADO) to nějak neuměj zpracovat, takže to ignorujou.
+    //Tam je ovšem probĺém, že ADO.NET, ani Dapper (což je jenom extension knihovna ADO) to nějak neuměj zpracovat. Jinými slovy to ignorujou.
     //Našel jsem, že SMO server s tim nějak umí zacházet, ale tomu zas údajně nejdou předávat parametry. Takže jsem tam musel ty stringy označující popis
     //dát na pevno. Což se mi nezdá moc elegantní (Ač to funguje).
-    //Je nějaký postup, jaký by bylo lepší použít místo toho? Případně jestli bys mě odkázal ohledně na nějakou literaturu/blog post/video/...?
+    //Je nějaký postup, který by bylo v C# lepší použít místo toho? Případně bych tě požádal jestli bys mě odkázal ohledně toho na nějakou literaturu/blog post/video/...?
     //Předem děkuji.
 
 
-    //Poznámka: Normálně bych ty skripty alespoň uložil do vlastních souborů, jedná se však o toy example, nebral jsem to tedy jako důležité.
+    //Poznámka: Normálně bych ty skripty alespoň uložil do vlastních souborů, jedná se však o toy example. Nebral jsem to tedy jako příliš důležité.
 
 
 
@@ -38,10 +38,11 @@ namespace PřídáníPopisu {
         /// If there is, then it terminates. If not, then it alters the data table, so it contains a column named Comment with a NOT NULL constraint.Then it assigns to it the  
         /// descriptions given as parameters. By default a record not contained in the listOfIds is going to contain a string 'default value'. 
         /// </summary>
-        /// <param name="listOfIds">Ids of records, we want to assign descriptions to.</param>
+        /// <param name="listOfIds">Ids of records, that we want to assign descriptions to.</param>
         /// <param name="listOfDescriptions">Descriptions that are going to be stored in the Comment column. 
-        ///                                Let us take a record x in the database.
-        ///                                The index of Id of x (in the listOfIds) must be the same as the index of description of x  (in the listOfDescriptions).
+        ///                                Let us take a record x in the TestDataTable.
+        ///                                It is required, that the index of Id of x (in the listOfIds) ïs the same as the index 
+        ///                                of description of x  (in the listOfDescriptions).
         /// </param>
         static public void addsCommentColumn(List<int> listOfIds, List<string> listOfDescriptions)
         {
@@ -76,7 +77,7 @@ namespace PřídáníPopisu {
                         server.ExecutionManager.ConnectionContext.BeginTransaction();
 
 
-                        //altering the table: adding new column named 'Comment' that is of type varchar(50) and is NOT NULL
+                        //altering the table: adding new column named 'Comment' that is of type varchar(50) and does not allow NULLs
                         //and setting constraint regarding default value, that should be inserted instead of NULL upon altering the table
                         string sqlKodPridaniSloupce = "ALTER TABLE TestDataTable ADD Comment varchar(50)  NOT NULL CONSTRAINT TheNameOfDefaultValueConstraint DEFAULT('default value') WITH VALUES; \n GO";
                         server.ConnectionContext.ExecuteNonQuery(sqlKodPridaniSloupce);
